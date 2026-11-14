@@ -1,0 +1,75 @@
+# Shared configuration for data fetching and (later) the dispersion model.
+
+# Geographic box cached from the reanalysis and searched for TROPOMI pixels.
+# west/east in degrees east, south/north in degrees north.
+domain:
+  west: -27.0
+  east: -12.0
+  south: 62.0
+  north: 67.5
+
+met:
+  # Hours of meteorology fetched before onset and after the end of an eruption.
+  # The tail lets emissions from the last day be followed to the longest lag.
+  pad_before_hours: 6
+  pad_after_hours: 72
+  # CARRA has 65 hybrid levels, numbered from the model top (1) to the
+  # surface (65). Levels kept are lowest_level..65.
+  carra_top_level: 20
+
+tropomi:
+  pad_before_hours: 24
+  pad_after_hours: 72
+
+# Eruption windows (UTC). Vent positions are approximate placeholders for the
+# centre of activity; proper time-varying fissure geometry is added with the
+# dispersion model.
+eruptions:
+  fagradalsfjall-2021:
+    start: 2021-03-19T20:00
+    end: 2021-09-18T12:00
+    vent: {lat: 63.889, lon: -22.270}
+  meradalir-2022:
+    start: 2022-08-03T13:00
+    end: 2022-08-21T12:00
+    vent: {lat: 63.900, lon: -22.250}
+  litli-hrutur-2023:
+    start: 2023-07-10T16:00
+    end: 2023-08-05T12:00
+    vent: {lat: 63.917, lon: -22.210}
+  sundhnukur-2023-12:
+    start: 2023-12-18T22:00
+    end: 2023-12-21T12:00
+    vent: {lat: 63.880, lon: -22.380}
+  sundhnukur-2024-01:
+    start: 2024-01-14T07:00
+    end: 2024-01-16T12:00
+    vent: {lat: 63.860, lon: -22.400}
+  sundhnukur-2024-02:
+    start: 2024-02-08T06:00
+    end: 2024-02-09T12:00
+    vent: {lat: 63.885, lon: -22.375}
+  sundhnukur-2024-03:
+    start: 2024-03-16T20:00
+    end: 2024-05-09T12:00
+    vent: {lat: 63.880, lon: -22.385}
+  sundhnukur-2024-05:
+    start: 2024-05-29T12:00
+    end: 2024-06-22T12:00
+    vent: {lat: 63.880, lon: -22.385}
+  sundhnukur-2024-08:
+    start: 2024-08-22T21:00
+    end: 2024-09-05T12:00
+    vent: {lat: 63.905, lon: -22.365}
+  sundhnukur-2024-11:
+    start: 2024-11-20T23:00
+    end: 2024-12-09T12:00
+    vent: {lat: 63.885, lon: -22.375}
+  sundhnukur-2025-04:
+    start: 2025-04-01T09:00
+    end: 2025-04-01T18:00
+    vent: {lat: 63.870, lon: -22.390}
+  sundhnukur-2025-07:
+    start: 2025-07-16T04:00
+    end: 2025-08-05T12:00
+    vent: {lat: 63.900, lon: -22.370}
