@@ -38,6 +38,7 @@ API = (os.environ.get("CDSAPI_URL") or "https://cds.climate.copernicus.eu/api").
 N_LEVELS = 65
 CYCLES = range(0, 24, 3)
 MARGIN = 4  # grid points kept outside the lat/lon box
+MISSING = 9.96921e36  # NetCDF default float fill, also used for GRIB bitmap gaps
 EARTH_RADIUS = {0: 6367470.0, 6: 6371229.0}  # GRIB2 shapeOfTheEarth codes for spheres, metres
 
 # name in file: (CDS variable, GRIB shortName, least significant digit kept)
@@ -166,7 +167,11 @@ class Grid:
     def crop(self, gid) -> np.ndarray:
         if eccodes.codes_get(gid, "Ny") != self.ny or eccodes.codes_get(gid, "Nx") != self.nx:
             raise ValueError("GRIB message on a different grid")
-        return eccodes.codes_get_values(gid).reshape(self.ny, self.nx)[self.j, self.i].astype(np.float32)
+        # Some fields (cloud base and top where there is no cloud) carry a bitmap.
+        eccodes.codes_set(gid, "missingValue", MISSING)
+        values = eccodes.codes_get_values(gid).reshape(self.ny, self.nx)[self.j, self.i].astype(np.float32)
+        values[values == np.float32(MISSING)] = np.nan
+        return values
 
 
 def messages(path: Path):
@@ -224,7 +229,7 @@ class DayFile:
             chunks = {"time": 1, "level": 1, "y": ny, "x": nx}
             v = ds.createVariable(
                 name, "f4", dims, zlib=True, complevel=4, shuffle=True, least_significant_digit=digits,
-                chunksizes=[chunks[d] for d in dims], fill_value=np.float32(9.96921e36),
+                chunksizes=[chunks[d] for d in dims], fill_value=np.float32(MISSING),
             )
             v.grid_mapping = "projection"
             return v
@@ -265,14 +270,16 @@ class DayFile:
             if name is None:
                 raise ValueError(f"unexpected GRIB field {short!r} in {path.name}")
             values = self.grid.crop(gid)
+            if "units" not in self.ds[name].ncattrs():
+                self.ds[name].units = eccodes.codes_get(gid, "units")
             if name in LEVEL_VARS:
-                self.ds[name][hour, level - self.top] = values
+                self.ds[name][hour, level - self.top] = np.ma.masked_invalid(values)
                 self.filled[name][hour, level - self.top] = True
             elif name in SURFACE_VARS:
-                self.ds[name][hour] = values
+                self.ds[name][hour] = np.ma.masked_invalid(values)
                 self.filled[name][hour] = True
             elif not self.filled[name][0]:
-                self.ds[name][:] = values
+                self.ds[name][:] = np.ma.masked_invalid(values)
                 self.filled[name][0] = True
 
     def add_fluxes(self, path: Path) -> None:
@@ -282,13 +289,16 @@ class DayFile:
         for gid, short, _, hour, lead in messages(path):
             if short in by_short:
                 acc[by_short[short], hour - lead, lead] = self.grid.crop(gid)
+                if "units" not in self.ds[by_short[short]].ncattrs():
+                    units = eccodes.codes_get(gid, "units")
+                    self.ds[by_short[short]].units = units if short == "tp" else f"({units}) s-1"
         for (name, cycle, lead), values in acc.items():
             previous = acc.get((name, cycle, lead - 1)) if lead > 1 else 0.0
             if previous is None:
                 raise ValueError(f"{name}: missing +{lead - 1} h field for the {cycle:02d} UTC run")
             hour = cycle + lead - 1  # start of the accumulation hour
             scale = 1.0 if name == "tp" else 1.0 / 3600.0
-            self.ds[name][hour] = (values - previous) * scale
+            self.ds[name][hour] = np.ma.masked_invalid((values - previous) * scale)
             self.filled[name][hour] = True
 
     def close(self) -> None:
