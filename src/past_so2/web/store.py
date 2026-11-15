@@ -32,6 +32,13 @@ class Source:
             return self.bucket.download(key, path)
         return self.local / key
 
+    def write(self, key: str, data: bytes) -> None:
+        if self.local is None:
+            self.bucket.put_bytes(key, data, "application/octet-stream")
+            return
+        (self.local / key).parent.mkdir(parents=True, exist_ok=True)
+        (self.local / key).write_bytes(data)
+
 
 class Sink:
     """The public bucket under a prefix, or a local folder."""

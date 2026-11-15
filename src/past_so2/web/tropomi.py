@@ -96,10 +96,15 @@ def colours(du: np.ndarray, scale_max: float) -> np.ndarray:
     return np.stack([np.interp(t, stops, rgba[:, k]) for k in range(4)], axis=-1).round().astype(np.uint8)
 
 
-def process(path: Path, window: dict, bbox) -> tuple[dict, dict[str, bytes]] | None:
-    """Overpass summary and one PNG per product for a subset file, or None when no pixel is inside the rectangle."""
-    from PIL import Image, ImageDraw
+COLUMNS = {"1km": "sulfurdioxide_total_vertical_column_1km", "7km": "sulfurdioxide_total_vertical_column_7km", "15km": "sulfurdioxide_total_vertical_column_15km"}
 
+
+def extract(path: Path, window: dict) -> dict[str, np.ndarray] | None:
+    """The pixels of a subset file that lie inside the rectangle, or None when there are none.
+
+    This is all the viewer needs from an orbit and is about a fortieth of the subset's size, so
+    it is kept in the private bucket and images can be redrawn without downloading the subset again.
+    """
     with netCDF4.Dataset(path) as ds:
         product = ds["PRODUCT"]
         lat = np.ma.filled(product["latitude"][0], np.nan)
@@ -111,30 +116,44 @@ def process(path: Path, window: dict, bbox) -> tuple[dict, dict[str, bytes]] | N
         delta = np.ma.filled(product["delta_time"][0].astype(float), np.nan)
         if delta.ndim == 1:
             delta = np.broadcast_to(delta[:, None], lat.shape)
-        seen = delta[inside]
-        detail = product["SUPPORT_DATA/DETAILED_RESULTS"]
-        columns = {k: np.ma.filled(detail[v["variable"]][0], np.nan) * DU_PER_MOL_M2 for k, v in PRODUCTS.items()}
-        good = inside & (np.ma.filled(product["qa_value"][0], 0.0) > QA_MIN)
-        for du in columns.values():
-            good &= np.isfinite(du)
-        geo = product["SUPPORT_DATA/GEOLOCATIONS"]
-        corner_lat = np.ma.filled(geo["latitude_bounds"][0], np.nan)[good]
-        corner_lon = np.ma.filled(geo["longitude_bounds"][0], np.nan)[good]
+        detail, geo = product["SUPPORT_DATA/DETAILED_RESULTS"], product["SUPPORT_DATA/GEOLOCATIONS"]
+        out = {
+            "reference_unix": np.array(reference.replace(tzinfo=timezone.utc).timestamp()),
+            "delta_ms": delta[inside],
+            "latitude": lat[inside].astype("f4"),
+            "longitude": lon[inside].astype("f4"),
+            "corner_latitude": np.ma.filled(geo["latitude_bounds"][0], np.nan)[inside].astype("f4"),
+            "corner_longitude": np.ma.filled(geo["longitude_bounds"][0], np.nan)[inside].astype("f4"),
+            "solar_zenith_angle": np.ma.filled(geo["solar_zenith_angle"][0], np.nan)[inside].astype("f4"),
+            "qa_value": np.ma.filled(product["qa_value"][0], 0.0)[inside].astype("f4"),
+        }
+        for key, name in COLUMNS.items():
+            out[f"column_{key}_du"] = (np.ma.filled(detail[name][0], np.nan)[inside] * DU_PER_MOL_M2).astype("f4")
+    return out
 
+
+def render(data: dict[str, np.ndarray], name: str, bbox) -> tuple[dict, dict[str, bytes]]:
+    """Overpass summary and one PNG per product from the extracted pixels of an orbit."""
+    from PIL import Image, ImageDraw
+
+    good = data["qa_value"] > QA_MIN
+    for key in PRODUCTS:
+        good &= np.isfinite(data[f"column_{key}_du"])
     west, south, east, north = bbox
     width, height = image_size(bbox)
-    px = (corner_lon - west) / (east - west) * width
-    py = (mercator_y(north) - mercator_y(corner_lat)) / (mercator_y(north) - mercator_y(south)) * height
+    px = (data["corner_longitude"][good] - west) / (east - west) * width
+    py = (mercator_y(north) - mercator_y(data["corner_latitude"][good])) / (mercator_y(north) - mercator_y(south)) * height
     drawable = np.isfinite(px).all(axis=1) & np.isfinite(py).all(axis=1)
     corners = [list(zip(px[k].tolist(), py[k].tolist())) for k in range(len(px))]
+    reference = datetime.fromtimestamp(float(data["reference_unix"]), timezone.utc)
     stamp = lambda ms: (reference + timedelta(milliseconds=float(ms))).strftime("%Y-%m-%dT%H:%M:%SZ")  # noqa: E731
-    orbit = int(NAME.match(path.name)["orbit"])
+    orbit = int(NAME.match(name)["orbit"])
     meta = {
         "orbit": orbit,
-        "stream": NAME.match(path.name)["stream"],
-        "start": stamp(np.nanmin(seen)),
-        "end": stamp(np.nanmax(seen)),
-        "pixels": int(inside.sum()),
+        "stream": NAME.match(name)["stream"],
+        "start": stamp(np.nanmin(data["delta_ms"])),
+        "end": stamp(np.nanmax(data["delta_ms"])),
+        "pixels": int(good.size),
         "good_pixels": int(good.sum()),
         "max_du": {},
         "images": {},
@@ -142,7 +161,7 @@ def process(path: Path, window: dict, bbox) -> tuple[dict, dict[str, bytes]] | N
     }
     pngs = {}
     for key, spec in PRODUCTS.items():
-        values = columns[key][good]
+        values = data[f"column_{key}_du"][good]
         image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
         rgba = colours(values, spec["max"])
@@ -155,6 +174,23 @@ def process(path: Path, window: dict, bbox) -> tuple[dict, dict[str, bytes]] | N
         meta["images"][key] = f"tropomi/img/{orbit}_{key}.png"
         pngs[key] = buffer.getvalue()
     return meta, pngs
+
+
+def compact_key(subset_key: str) -> str:
+    return subset_key.replace("tropomi/so2/", "tropomi/so2_window/").replace(".subset.nc", ".npz")
+
+
+def pixels_for(source: Source, key: str, window: dict, have_compact: bool) -> dict[str, np.ndarray] | None:
+    """Extracted pixels of an orbit: from the compact file if there is one, otherwise from the subset (and saved)."""
+    if have_compact:
+        with np.load(io.BytesIO(source.read(compact_key(key)))) as z:
+            return {k: z[k] for k in z.files} if "empty" not in z.files else None
+    with tempfile.TemporaryDirectory() as tmp:
+        data = extract(source.download(key, Path(tmp) / Path(key).name), window)
+    buffer = io.BytesIO()
+    np.savez_compressed(buffer, **(data if data is not None else {"empty": np.array(1)}))
+    source.write(compact_key(key), buffer.getvalue())
+    return data
 
 
 # --- all orbits -------------------------------------------------------------
@@ -191,17 +227,17 @@ def build(source: Source, sink: Sink, budget_hours: float, limit: int | None = N
     current = {orbit for orbit, o in overpasses.items() if o.get("processing") == PROCESSING}
     todo = [k for k in keys if int(NAME.match(Path(k).name)["orbit"]) not in current]
     print(f"{len(keys)} orbit files, {len(todo)} to process", flush=True)
+    compact = set(source.list("tropomi/so2_window/"))
     started, done = time.time(), 0
     for key in todo[:limit]:
         if time.time() - started > budget_hours * 3600:
             break
-        with tempfile.TemporaryDirectory() as tmp:
-            result = process(source.download(key, Path(tmp) / Path(key).name), window, bbox)
+        data = pixels_for(source, key, window, compact_key(key) in compact)
         orbit = int(NAME.match(Path(key).name)["orbit"])
-        if result is None:
+        if data is None:
             overpasses[orbit] = {"orbit": orbit, "start": "", "processing": PROCESSING, "outside": True}
         else:
-            meta, pngs = result
+            meta, pngs = render(data, Path(key).name, bbox)
             for product, png in pngs.items():
                 sink.write(meta["images"][product], png, "image/png", max_age=86400)
             overpasses[orbit] = meta
