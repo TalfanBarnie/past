@@ -107,8 +107,8 @@ def build(source: Source, sink: Sink) -> dict:
     links = load_links()
     now = datetime.now(timezone.utc)
     api = read_api(source, range(EPOCH.year, now.year + 1))
-    end = max(api["time_end"].max(), pd.Timestamp(now.year, now.month, 1)) + pd.offsets.MonthBegin(1)
-    end = pd.Timestamp(end.year, end.month, 1)
+    # The grids stop at the end of the last month that has data.
+    end = (api["time_end"].max() - pd.Timedelta(minutes=1)).to_period("M").to_timestamp() + pd.offsets.MonthBegin(1)
     n_h = int((end - EPOCH) / pd.Timedelta(hours=1))
     n_10 = n_h * 6
     api_by_station = {k: g.set_index("time_end")["so2_ugm3"] for k, g in api.groupby("station_id")}
