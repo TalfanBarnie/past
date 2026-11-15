@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       eruption:
-        description: Eruption name from config/project.yaml
+        description: Eruption name(s) from config/project.yaml (space separated, fetched in turn)
         default: sundhnukur-2024-05
       days:
         description: Optional YYYY-MM-DD days (space separated); empty for the whole eruption
@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: fetch-tropomi-${{ inputs.eruption }}
+  group: fetch-tropomi
 
 jobs:
   fetch:
@@ -37,4 +37,8 @@ jobs:
           cache: pip
       - run: pip install -e .
       # Already-fetched orbits are skipped, so a timed-out run can simply be started again.
-      - run: python -m past_so2.fetch.tropomi --eruption "$ERUPTION" ${DAYS:+--days $DAYS}
+      - run: |
+          for name in $ERUPTION; do
+            echo "== $name"
+            python -m past_so2.fetch.tropomi --eruption "$name" ${DAYS:+--days $DAYS}
+          done
