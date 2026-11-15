@@ -10,6 +10,7 @@ environment:
 
 from __future__ import annotations
 
+import gzip
 import os
 import re
 from functools import lru_cache
@@ -56,6 +57,16 @@ class Bucket:
         extra = {"ContentType": content_type} if content_type else None
         self.client.upload_file(str(path), self.name, key, ExtraArgs=extra)
         print(f"uploaded {key} ({Path(path).stat().st_size / 1e6:.1f} MB)", flush=True)
+
+    def put_bytes(self, key: str, data: bytes, content_type: str, compress: bool = False, max_age: int = 300) -> None:
+        """Store bytes; with compress they are gzipped and served with Content-Encoding: gzip."""
+        extra = {"ContentType": content_type, "CacheControl": f"public, max-age={max_age}"}
+        if compress:
+            data, extra["ContentEncoding"] = gzip.compress(data, 6), "gzip"
+        self.client.put_object(Bucket=self.name, Key=key, Body=data, **extra)
+
+    def get_bytes(self, key: str) -> bytes:
+        return self.client.get_object(Bucket=self.name, Key=key)["Body"].read()
 
     def download(self, key: str, path: str | Path) -> Path:
         Path(path).parent.mkdir(parents=True, exist_ok=True)

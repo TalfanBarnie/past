@@ -2,7 +2,7 @@
 
 Whole years come from the yearly CSV archives; days after the newest archive
 come from the per-date API. Output is one Parquet file per year plus a station
-table, limited to stations inside the project domain.
+table, for every station that reports SO2.
 
 Times are the end of each averaging hour, in UTC (Iceland keeps UTC all year).
 """
@@ -12,13 +12,13 @@ from __future__ import annotations
 import argparse
 import io
 import re
+import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
 import requests
 
-from .. import config
 
 BASE = "https://api.ust.is"
 COLUMNS = ["station_id", "time_end", "so2_ugm3", "resolution", "verification", "validity"]
@@ -30,12 +30,12 @@ def _get(url: str, **kwargs) -> requests.Response:
     return r
 
 
-def fetch_stations(dom: config.Domain) -> pd.DataFrame:
+def fetch_stations() -> pd.DataFrame:
     rows = []
     for s in _get(f"{BASE}/aq/a/getStations").json():
         params = {p.strip('"') for p in s["parameters"].strip("{}").split(",")}
         lat, lon = float(s["latitude"]), float(s["longitude"])
-        if "SO2" not in params or not dom.contains(lat, lon):
+        if "SO2" not in params:
             continue
         rows.append(
             {
@@ -63,15 +63,20 @@ def archive_urls() -> dict[int, str]:
 
 
 def parse_archive(csv_bytes: bytes) -> pd.DataFrame:
+    """SO2 rows of a yearly archive. The files differ between years in date format and unit column name."""
     df = pd.read_csv(io.BytesIO(csv_bytes))
     df = df[df["pollutantnotation"] == "SO2"]
-    units = set(df["concentration"].unique())
+    units = set(df["concentration" if "concentration" in df else "unit"].unique())
     if units - {"µg/m3"}:
         raise ValueError(f"unexpected SO2 units in archive: {units}")
+    time_end = pd.to_datetime(df["endtime"], format="%d/%m/%Y %H:%M:%S", errors="coerce")
+    time_end = time_end.fillna(pd.to_datetime(df["endtime"], format="%Y-%m-%d %H:%M:%S", errors="coerce"))
+    if time_end.isna().any():
+        raise ValueError("unrecognised date format in archive")
     out = pd.DataFrame(
         {
             "station_id": df["station_local_id"],
-            "time_end": pd.to_datetime(df["endtime"], format="%d/%m/%Y %H:%M:%S"),
+            "time_end": time_end,
             "so2_ugm3": pd.to_numeric(df["the_value"], errors="coerce"),
             "resolution": df["resolution"],
             "verification": df["verification"].astype("Int8"),
@@ -117,6 +122,7 @@ def fetch_year(year: int, archives: dict[int, str], station_ids) -> pd.DataFrame
     while day <= last:
         parts.append(fetch_day(day))
         day += timedelta(days=1)
+        time.sleep(0.5)  # be gentle with the API
     return tidy(pd.concat(parts), station_ids)
 
 
@@ -128,10 +134,10 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     args.out.mkdir(parents=True, exist_ok=True)
-    stations = fetch_stations(config.domain())
+    stations = fetch_stations()
     outputs = [args.out / "stations.parquet"]
     stations.to_parquet(outputs[0], index=False)
-    print(f"{len(stations)} SO2 stations in domain", flush=True)
+    print(f"{len(stations)} SO2 stations", flush=True)
 
     archives = archive_urls()
     for year in args.years:
