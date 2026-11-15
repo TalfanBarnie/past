@@ -162,7 +162,7 @@ def write_index(sink: Sink, window: dict, bbox, overpasses: dict) -> None:
         "projection": "Web Mercator; every image covers bbox exactly",
         "legend": {"scale": "sqrt", "min": 0.0, "max": SCALE_MAX_DU, "stops": [{"at": s, "rgba": list(c)} for s, c in RAMP]},
         "times": "start and end are when the first and last pixels inside the CARRA rectangle were observed (UTC)",
-        "overpasses": sorted(overpasses.values(), key=lambda o: o["start"]),
+        "overpasses": sorted(overpasses.values(), key=lambda o: o.get("start", "")),
     }
     sink.write("tropomi/index.json", json.dumps(index).encode(), "application/json", compress=True)
 
@@ -171,11 +171,12 @@ def build(source: Source, sink: Sink, budget_hours: float, limit: int | None = N
     window = config.load()["carra_window"]
     bbox = window_bbox(window)
     previous = sink.read("tropomi/index.json")
-    overpasses = {}
-    if previous:
-        overpasses = {o["orbit"]: o for o in json.loads(previous)["overpasses"] if o.get("processing") == PROCESSING}
+    # Entries from an older processing version stay in the index until their image is redrawn,
+    # so the published list never shrinks while a rebuild is under way.
+    overpasses = {o["orbit"]: o for o in json.loads(previous)["overpasses"]} if previous else {}
     keys = [k for k in source.list("tropomi/so2/") if k.endswith(".subset.nc")]
-    todo = [k for k in keys if int(NAME.match(Path(k).name)["orbit"]) not in overpasses]
+    current = {orbit for orbit, o in overpasses.items() if o.get("processing") == PROCESSING}
+    todo = [k for k in keys if int(NAME.match(Path(k).name)["orbit"]) not in current]
     print(f"{len(keys)} orbit files, {len(todo)} to process", flush=True)
     started, done = time.time(), 0
     for key in todo[:limit]:
@@ -192,9 +193,9 @@ def build(source: Source, sink: Sink, budget_hours: float, limit: int | None = N
             overpasses[orbit] = meta
         done += 1
         if done % 50 == 0:
-            write_index(sink, window, bbox, {k: v for k, v in overpasses.items() if not v.get("outside")})
+            write_index(sink, window, bbox, overpasses)
             print(f"{done} of {len(todo)} processed", flush=True)
-    # Orbits that never enter the rectangle stay out of the published list but are remembered as done.
+    # Orbits that never enter the rectangle are kept, marked "outside", so they are not processed again.
     write_index(sink, window, bbox, overpasses)
     return len(todo) - done
 
