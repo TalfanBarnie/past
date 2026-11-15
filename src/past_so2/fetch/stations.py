@@ -25,9 +25,16 @@ COLUMNS = ["station_id", "time_end", "so2_ugm3", "resolution", "verification", "
 
 
 def _get(url: str, **kwargs) -> requests.Response:
-    r = requests.get(url, timeout=300, **kwargs)
-    r.raise_for_status()
-    return r
+    for attempt in range(6):
+        try:
+            r = requests.get(url, timeout=300, **kwargs)
+            r.raise_for_status()
+            return r
+        except (requests.ConnectionError, requests.Timeout, requests.HTTPError) as err:
+            if attempt == 5:
+                raise
+            print(f"retrying {url}: {err.__class__.__name__}", flush=True)
+            time.sleep(10 * (attempt + 1))
 
 
 def fetch_stations() -> pd.DataFrame:
