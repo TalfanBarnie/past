@@ -90,7 +90,8 @@ def fetch_day(day: date) -> pd.DataFrame:
     """One day from the API. The API reports no validity flag."""
     rows = []
     for station_id, s in _get(f"{BASE}/aq/a/getDate/date/{day:%Y-%m-%d}").json().items():
-        p = s.get("parameters", {}).get("SO2")
+        # A day without data comes back as an error message instead of stations.
+        p = s.get("parameters", {}).get("SO2") if isinstance(s, dict) else None
         if not p:
             continue
         if p["unit"] != "µg/m3":
@@ -135,22 +136,23 @@ def main(argv=None):
 
     args.out.mkdir(parents=True, exist_ok=True)
     stations = fetch_stations()
-    outputs = [args.out / "stations.parquet"]
-    stations.to_parquet(outputs[0], index=False)
+    stations.to_parquet(args.out / "stations.parquet", index=False)
     print(f"{len(stations)} SO2 stations", flush=True)
 
+    def keep(path: Path) -> None:
+        if args.upload:
+            from .. import storage
+
+            storage.bucket("private").upload(path, f"stations/{path.name}")
+
+    keep(args.out / "stations.parquet")
     archives = archive_urls()
     for year in args.years:
         df = fetch_year(year, archives, stations["station_id"])
-        outputs.append(args.out / f"so2_{year}.parquet")
-        df.to_parquet(outputs[-1], index=False)
+        path = args.out / f"so2_{year}.parquet"
+        df.to_parquet(path, index=False)
         print(f"{year}: {len(df)} rows, {df['station_id'].nunique()} stations", flush=True)
-
-    if args.upload:
-        from .. import storage
-
-        for path in outputs:
-            storage.bucket("private").upload(path, f"stations/{path.name}")
+        keep(path)
 
 
 if __name__ == "__main__":
