@@ -41,7 +41,7 @@ jobs:
       # Days already in the bucket are skipped. When the time budget runs out with
       # days left, a follow-up run is started; it waits for this one to finish.
       - id: fetch
-        run: python -m past_so2.fetch.carra --eruption "$ERUPTION" --budget-hours 4.0 ${DAYS:+--days $DAYS}
+        run: python -m past_so2.fetch.carra --eruption "$ERUPTION" --budget-hours 3.25 ${DAYS:+--days $DAYS}
       - if: steps.fetch.outputs.continue == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
