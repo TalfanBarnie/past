@@ -21,12 +21,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 350
     env:
-      B2_ENDPOINT: ${{ vars.B2_ENDPOINT }}
-      B2_BUCKET_PRIVATE: ${{ vars.B2_BUCKET_PRIVATE }}
-      B2_PRIVATE_KEY_ID: ${{ secrets.B2_PRIVATE_KEY_ID }}
-      B2_PRIVATE_APPLICATION_KEY: ${{ secrets.B2_PRIVATE_APPLICATION_KEY }}
-      CDSE_S3_ACCESS_KEY: ${{ secrets.CDSE_S3_ACCESS_KEY }}
-      CDSE_S3_SECRET_KEY: ${{ secrets.CDSE_S3_SECRET_KEY }}
+      B2_ENDPOINT: ${{ vars.B2_ENDPOINT || secrets.B2_ENDPOINT }}
+      B2_BUCKET_PRIVATE: ${{ vars.B2_BUCKET_PRIVATE || secrets.B2_BUCKET_PRIVATE }}
+      B2_PRIVATE_KEY_ID: ${{ secrets.B2_PRIVATE_KEY_ID || vars.B2_PRIVATE_KEY_ID }}
+      B2_PRIVATE_APPLICATION_KEY: ${{ secrets.B2_PRIVATE_APPLICATION_KEY || vars.B2_PRIVATE_APPLICATION_KEY }}
+      CDSE_S3_ACCESS_KEY: ${{ secrets.CDSE_S3_ACCESS_KEY || vars.CDSE_S3_ACCESS_KEY }}
+      CDSE_S3_SECRET_KEY: ${{ secrets.CDSE_S3_SECRET_KEY || vars.CDSE_S3_SECRET_KEY }}
       ERUPTION: ${{ inputs.eruption }}
       DAYS: ${{ inputs.days }}
     steps:

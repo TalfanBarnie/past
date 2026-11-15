@@ -25,11 +25,15 @@ class Bucket:
         if kind not in ("private", "public"):
             raise ValueError(kind)
         upper = kind.upper()
-        endpoint = os.environ["B2_ENDPOINT"]
+        names = ["B2_ENDPOINT", f"B2_BUCKET_{upper}", f"B2_{upper}_KEY_ID", f"B2_{upper}_APPLICATION_KEY"]
+        missing = [n for n in names if not os.environ.get(n, "").strip()]
+        if missing:
+            raise RuntimeError("missing or empty settings: " + ", ".join(missing))
+        endpoint = os.environ["B2_ENDPOINT"].strip()
         if not endpoint.startswith("http"):
             endpoint = "https://" + endpoint
         region = re.search(r"s3\.([a-z0-9-]+)\.backblazeb2\.com", endpoint)
-        self.name = os.environ[f"B2_BUCKET_{upper}"]
+        self.name = os.environ[f"B2_BUCKET_{upper}"].strip()
         self.client = boto3.client(
             "s3",
             endpoint_url=endpoint,
