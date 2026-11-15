@@ -356,7 +356,7 @@ def main(argv=None):
 
         bucket = storage.bucket("private")
 
-    started, remaining = time.time(), []
+    started, remaining, fetched = time.time(), [], 0
     for n, day in enumerate(days):
         if bucket and bucket.exists(key_for(day)):
             print(f"skip {day}", flush=True)
@@ -371,8 +371,13 @@ def main(argv=None):
                 bucket.upload(path, key_for(day))
             else:
                 path.rename(args.local / path.name)
+        fetched += 1
     if remaining:
         print(f"time budget reached; {len(remaining)} days left, starting {remaining[0]}. Run again to continue.", flush=True)
+    # Lets the workflow start a follow-up run, but only if this one made progress.
+    if os.environ.get("GITHUB_OUTPUT"):
+        with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+            f.write(f"continue={'true' if remaining and fetched else 'false'}\n")
 
 
 if __name__ == "__main__":
