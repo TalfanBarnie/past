@@ -8,6 +8,18 @@ domain:
   south: 62.0
   north: 67.5
 
+# The rectangle of the CARRA west grid that the meteorology is cached on (set by the
+# domain box above plus a margin). Lambert conformal, tangent at lat0, spherical Earth.
+carra_window:
+  lat0: 72.0
+  lon0: -36.0
+  earth_radius_m: 6367470.0
+  dx_m: 2500.0
+  nx: 349
+  ny: 320
+  corner_lat: 62.04824878524832   # centre of grid cell (0, 0)
+  corner_lon: -28.911598023317026
+
 met:
   # Hours of meteorology fetched before onset and after the end of an eruption.
   # The tail lets emissions from the last day be followed to the longest lag.

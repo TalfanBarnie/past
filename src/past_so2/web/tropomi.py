@@ -1,0 +1,214 @@
+"""Build the TROPOMI overpass index and map images for the web viewer.
+
+For every orbit subset in the private bucket this finds the pixels inside the
+CARRA rectangle, records when the first and last of them were observed, and
+draws the 1 km SO2 column of the good-quality pixels as a transparent PNG in
+Web Mercator. All images share one bounding box.
+"""
+
+from __future__ import annotations
+
+import argparse
+import io
+import json
+import math
+import re
+import tempfile
+import time
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import netCDF4
+import numpy as np
+
+from .. import config
+from .store import Sink, Source
+
+DU_PER_MOL_M2 = 2241.15
+QA_MIN = 0.5
+SCALE_MAX_DU = 20.0
+IMAGE_WIDTH = 1024
+PROCESSING = 1  # bump to rebuild every image
+# Light to dark purple; the alpha rises with the column so noise near zero stays faint.
+RAMP = [(0.0, (236, 231, 242, 70)), (0.25, (190, 160, 215, 150)), (0.5, (140, 90, 190, 200)), (0.75, (95, 40, 150, 225)), (1.0, (50, 0, 85, 240))]
+NAME = re.compile(r"S5P_(?P<stream>\w{4})_L2__SO2____(?P<start>\d{8}T\d{6})_\d{8}T\d{6}_(?P<orbit>\d{5})_")
+
+
+# --- geometry ---------------------------------------------------------------
+
+
+def lcc_xy(lat, lon, w: dict):
+    """Lambert conformal conic (one standard parallel, sphere): metres from the pole-centred origin."""
+    n = math.sin(math.radians(w["lat0"]))
+    f = math.cos(math.radians(w["lat0"])) * math.tan(math.pi / 4 + math.radians(w["lat0"]) / 2) ** n / n
+    rho = w["earth_radius_m"] * f / np.tan(np.pi / 4 + np.radians(lat) / 2) ** n
+    theta = n * np.radians((np.asarray(lon) - w["lon0"] + 180.0) % 360.0 - 180.0)
+    return rho * np.sin(theta), -rho * np.cos(theta)
+
+
+def in_window(lat, lon, w: dict) -> np.ndarray:
+    """True where a point falls inside the cached CARRA rectangle."""
+    x0, y0 = lcc_xy(w["corner_lat"], w["corner_lon"], w)
+    x, y = lcc_xy(lat, lon, w)
+    i, j = (x - x0) / w["dx_m"], (y - y0) / w["dx_m"]
+    return (i >= -0.5) & (i <= w["nx"] - 0.5) & (j >= -0.5) & (j <= w["ny"] - 0.5)
+
+
+def window_bbox(w: dict) -> list[float]:
+    """West, south, east, north of the rectangle, rounded outwards to 0.05 degrees."""
+    x0, y0 = lcc_xy(w["corner_lat"], w["corner_lon"], w)
+    n = math.sin(math.radians(w["lat0"]))
+    f = math.cos(math.radians(w["lat0"])) * math.tan(math.pi / 4 + math.radians(w["lat0"]) / 2) ** n / n
+    i = np.linspace(-0.5, w["nx"] - 0.5, 200)
+    j = np.linspace(-0.5, w["ny"] - 0.5, 200)
+    ex = np.concatenate([i, i, np.full_like(j, i[0]), np.full_like(j, i[-1])]) * w["dx_m"] + x0
+    ey = np.concatenate([np.full_like(i, j[0]), np.full_like(i, j[-1]), j, j]) * w["dx_m"] + y0
+    rho = np.hypot(ex, ey)
+    lon = w["lon0"] + np.degrees(np.arctan2(ex, -ey)) / n
+    lat = np.degrees(2 * np.arctan((w["earth_radius_m"] * f / rho) ** (1 / n)) - np.pi / 2)
+    r = lambda v, up: (math.ceil(v * 20) if up else math.floor(v * 20)) / 20  # noqa: E731
+    return [r(lon.min(), False), r(lat.min(), False), r(lon.max(), True), r(lat.max(), True)]
+
+
+def mercator_y(lat):
+    return np.log(np.tan(np.pi / 4 + np.radians(lat) / 2))
+
+
+def image_size(bbox) -> tuple[int, int]:
+    west, south, east, north = bbox
+    height = IMAGE_WIDTH * (mercator_y(north) - mercator_y(south)) / math.radians(east - west)
+    return IMAGE_WIDTH, int(round(height))
+
+
+# --- one orbit --------------------------------------------------------------
+
+
+def colours(du: np.ndarray) -> np.ndarray:
+    t = np.sqrt(np.clip(du / SCALE_MAX_DU, 0.0, 1.0))
+    stops = np.array([s for s, _ in RAMP])
+    rgba = np.array([c for _, c in RAMP], dtype=float)
+    return np.stack([np.interp(t, stops, rgba[:, k]) for k in range(4)], axis=-1).round().astype(np.uint8)
+
+
+def process(path: Path, window: dict, bbox) -> tuple[dict, bytes] | None:
+    """Overpass summary and PNG for one subset file, or None when no pixel is inside the rectangle."""
+    from PIL import Image, ImageDraw
+
+    with netCDF4.Dataset(path) as ds:
+        product = ds["PRODUCT"]
+        lat = np.ma.filled(product["latitude"][0], np.nan)
+        lon = np.ma.filled(product["longitude"][0], np.nan)
+        inside = in_window(lat, lon, window) & np.isfinite(lat)
+        if not inside.any():
+            return None
+        reference = datetime.strptime(product["delta_time"].units.split("since ")[1][:19], "%Y-%m-%d %H:%M:%S")
+        delta = np.ma.filled(product["delta_time"][0].astype(float), np.nan)
+        if delta.ndim == 1:
+            delta = np.broadcast_to(delta[:, None], lat.shape)
+        seen = delta[inside]
+        du = np.ma.filled(product["SUPPORT_DATA/DETAILED_RESULTS/sulfurdioxide_total_vertical_column_1km"][0], np.nan)
+        du = du * DU_PER_MOL_M2
+        good = inside & np.isfinite(du) & (np.ma.filled(product["qa_value"][0], 0.0) > QA_MIN)
+        geo = product["SUPPORT_DATA/GEOLOCATIONS"]
+        corner_lat = np.ma.filled(geo["latitude_bounds"][0], np.nan)[good]
+        corner_lon = np.ma.filled(geo["longitude_bounds"][0], np.nan)[good]
+
+    west, south, east, north = bbox
+    width, height = image_size(bbox)
+    px = (corner_lon - west) / (east - west) * width
+    py = (mercator_y(north) - mercator_y(corner_lat)) / (mercator_y(north) - mercator_y(south)) * height
+    image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    values = du[good]
+    order = np.argsort(values)  # highest columns drawn last, on top
+    rgba = colours(values)
+    for k in order:
+        if np.isfinite(px[k]).all() and np.isfinite(py[k]).all():
+            draw.polygon(list(zip(px[k].tolist(), py[k].tolist())), fill=tuple(int(c) for c in rgba[k]))
+    buffer = io.BytesIO()
+    image.save(buffer, "PNG", optimize=True)
+
+    stamp = lambda ms: (reference + timedelta(milliseconds=float(ms))).strftime("%Y-%m-%dT%H:%M:%SZ")  # noqa: E731
+    match = NAME.match(path.name)
+    meta = {
+        "orbit": int(match["orbit"]),
+        "stream": match["stream"],
+        "start": stamp(np.nanmin(seen)),
+        "end": stamp(np.nanmax(seen)),
+        "pixels": int(inside.sum()),
+        "good_pixels": int(good.sum()),
+        "max_du": round(float(values.max()), 1) if values.size else None,
+        "p99_du": round(float(np.percentile(values, 99)), 1) if values.size else None,
+        "image": f"tropomi/img/{int(match['orbit'])}.png",
+        "processing": PROCESSING,
+    }
+    return meta, buffer.getvalue()
+
+
+# --- all orbits -------------------------------------------------------------
+
+
+def write_index(sink: Sink, window: dict, bbox, overpasses: dict) -> None:
+    width, height = image_size(bbox)
+    index = {
+        "version": 1,
+        "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
+        "product": "TROPOMI SO2 total vertical column, 1 km box profile",
+        "units": "DU",
+        "qa_min": QA_MIN,
+        "bbox": bbox,
+        "image_size": [width, height],
+        "projection": "Web Mercator; every image covers bbox exactly",
+        "legend": {"scale": "sqrt", "min": 0.0, "max": SCALE_MAX_DU, "stops": [{"at": s, "rgba": list(c)} for s, c in RAMP]},
+        "times": "start and end are when the first and last pixels inside the CARRA rectangle were observed (UTC)",
+        "overpasses": sorted(overpasses.values(), key=lambda o: o["start"]),
+    }
+    sink.write("tropomi/index.json", json.dumps(index).encode(), "application/json", compress=True)
+
+
+def build(source: Source, sink: Sink, budget_hours: float, limit: int | None = None) -> int:
+    window = config.load()["carra_window"]
+    bbox = window_bbox(window)
+    previous = sink.read("tropomi/index.json")
+    overpasses = {}
+    if previous:
+        overpasses = {o["orbit"]: o for o in json.loads(previous)["overpasses"] if o.get("processing") == PROCESSING}
+    keys = [k for k in source.list("tropomi/so2/") if k.endswith(".subset.nc")]
+    todo = [k for k in keys if int(NAME.match(Path(k).name)["orbit"]) not in overpasses]
+    print(f"{len(keys)} orbit files, {len(todo)} to process", flush=True)
+    started, done = time.time(), 0
+    for key in todo[:limit]:
+        if time.time() - started > budget_hours * 3600:
+            break
+        with tempfile.TemporaryDirectory() as tmp:
+            result = process(source.download(key, Path(tmp) / Path(key).name), window, bbox)
+        orbit = int(NAME.match(Path(key).name)["orbit"])
+        if result is None:
+            overpasses[orbit] = {"orbit": orbit, "start": "", "processing": PROCESSING, "outside": True}
+        else:
+            meta, png = result
+            sink.write(meta["image"], png, "image/png", max_age=86400)
+            overpasses[orbit] = meta
+        done += 1
+        if done % 50 == 0:
+            write_index(sink, window, bbox, {k: v for k, v in overpasses.items() if not v.get("outside")})
+            print(f"{done} of {len(todo)} processed", flush=True)
+    # Orbits that never enter the rectangle stay out of the published list but are remembered as done.
+    write_index(sink, window, bbox, overpasses)
+    return len(todo) - done
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--private-dir", type=Path, help="read from this folder instead of the private bucket (testing)")
+    ap.add_argument("--out-dir", type=Path, help="write to this folder instead of the public bucket (testing)")
+    ap.add_argument("--prefix", default="web/v1")
+    ap.add_argument("--budget-hours", type=float, default=5.0)
+    ap.add_argument("--limit", type=int, help="process at most this many orbits")
+    args = ap.parse_args(argv)
+    left = build(Source(args.private_dir), Sink(args.prefix, args.out_dir), args.budget_hours, args.limit)
+    print(f"{left} orbit files left to process", flush=True)
+
+
+if __name__ == "__main__":
+    main()

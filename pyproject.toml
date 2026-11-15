@@ -16,6 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 met = ["eccodes"]
+web = ["pillow"]
 dev = ["pytest"]
 
 [build-system]

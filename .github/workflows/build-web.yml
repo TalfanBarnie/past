@@ -1,0 +1,41 @@
+name: Build web data
+
+on:
+  workflow_dispatch:
+    inputs:
+      parts:
+        description: What to build
+        type: choice
+        options: [stations and tropomi, stations, tropomi]
+        default: stations and tropomi
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-web
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      B2_ENDPOINT: ${{ vars.B2_ENDPOINT }}
+      B2_PRIVATE_BUCKET: ${{ vars.B2_PRIVATE_BUCKET }}
+      B2_PRIVATE_KEY_ID: ${{ secrets.B2_PRIVATE_KEY_ID }}
+      B2_PRIVATE_APPLICATION_KEY: ${{ secrets.B2_PRIVATE_APPLICATION_KEY }}
+      B2_PUBLIC_BUCKET: ${{ vars.B2_PUBLIC_BUCKET }}
+      B2_PUBLIC_KEY_ID: ${{ secrets.B2_PUBLIC_KEY_ID }}
+      B2_PUBLIC_APPLICATION_KEY: ${{ secrets.B2_PUBLIC_APPLICATION_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[web]"
+      - if: contains(inputs.parts, 'stations')
+        run: python -m past_so2.web.stations
+      # Orbits already in the published index are skipped, so this can simply be run again.
+      - if: contains(inputs.parts, 'tropomi')
+        run: python -m past_so2.web.tropomi --budget-hours 5
