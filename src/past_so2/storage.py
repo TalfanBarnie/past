@@ -4,8 +4,8 @@ The private and public buckets use separate application keys, read from the
 environment:
 
     B2_ENDPOINT                  e.g. https://s3.us-east-005.backblazeb2.com
-    B2_BUCKET_PRIVATE            B2_PRIVATE_KEY_ID   B2_PRIVATE_APPLICATION_KEY
-    B2_BUCKET_PUBLIC             B2_PUBLIC_KEY_ID    B2_PUBLIC_APPLICATION_KEY
+    B2_PRIVATE_BUCKET            B2_PRIVATE_KEY_ID   B2_PRIVATE_APPLICATION_KEY
+    B2_PUBLIC_BUCKET             B2_PUBLIC_KEY_ID    B2_PUBLIC_APPLICATION_KEY
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ class Bucket:
         if kind not in ("private", "public"):
             raise ValueError(kind)
         upper = kind.upper()
-        names = ["B2_ENDPOINT", f"B2_BUCKET_{upper}", f"B2_{upper}_KEY_ID", f"B2_{upper}_APPLICATION_KEY"]
+        names = ["B2_ENDPOINT", f"B2_{upper}_BUCKET", f"B2_{upper}_KEY_ID", f"B2_{upper}_APPLICATION_KEY"]
         missing = [n for n in names if not os.environ.get(n, "").strip()]
         if missing:
             raise RuntimeError("missing or empty settings: " + ", ".join(missing))
@@ -33,7 +33,7 @@ class Bucket:
         if not endpoint.startswith("http"):
             endpoint = "https://" + endpoint
         region = re.search(r"s3\.([a-z0-9-]+)\.backblazeb2\.com", endpoint)
-        self.name = os.environ[f"B2_BUCKET_{upper}"].strip()
+        self.name = os.environ[f"B2_{upper}_BUCKET"].strip()
         self.client = boto3.client(
             "s3",
             endpoint_url=endpoint,
