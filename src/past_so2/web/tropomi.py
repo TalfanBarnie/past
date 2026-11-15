@@ -2,8 +2,8 @@
 
 For every orbit subset in the private bucket this finds the pixels inside the
 CARRA rectangle, records when the first and last of them were observed, and
-draws the 1 km SO2 column of the good-quality pixels as a transparent PNG in
-Web Mercator. All images share one bounding box.
+draws the SO2 column of the good-quality pixels, for each assumed plume height,
+as a transparent PNG in Web Mercator. All images share one bounding box.
 """
 
 from __future__ import annotations
@@ -26,9 +26,14 @@ from .store import Sink, Source
 
 DU_PER_MOL_M2 = 2241.15
 QA_MIN = 0.5
-SCALE_MAX_DU = 20.0
+# Columns retrieved for a plume assumed at 7 km or at 1 km. The instrument is less sensitive near
+# the ground, so the 1 km column is larger and several times noisier; each has its own colour scale.
+PRODUCTS = {
+    "7km": {"label": "SO2 column for a plume at 7 km", "variable": "sulfurdioxide_total_vertical_column_7km", "max": 10.0},
+    "1km": {"label": "SO2 column for a plume at 1 km", "variable": "sulfurdioxide_total_vertical_column_1km", "max": 20.0},
+}
 IMAGE_WIDTH = 1024
-PROCESSING = 2  # bump to rebuild every image
+PROCESSING = 3  # bump to rebuild every image
 # Light to dark purple. Retrieval noise is a couple of DU, so columns near zero are almost
 # transparent (enough to show where there is coverage) and opacity rises with the column.
 RAMP = [(0.0, (225, 215, 240, 28)), (0.25, (190, 160, 215, 60)), (0.5, (140, 90, 190, 175)), (0.75, (95, 40, 150, 225)), (1.0, (50, 0, 85, 245))]
@@ -84,15 +89,15 @@ def image_size(bbox) -> tuple[int, int]:
 # --- one orbit --------------------------------------------------------------
 
 
-def colours(du: np.ndarray) -> np.ndarray:
-    t = np.sqrt(np.clip(du / SCALE_MAX_DU, 0.0, 1.0))
+def colours(du: np.ndarray, scale_max: float) -> np.ndarray:
+    t = np.sqrt(np.clip(du / scale_max, 0.0, 1.0))
     stops = np.array([s for s, _ in RAMP])
     rgba = np.array([c for _, c in RAMP], dtype=float)
     return np.stack([np.interp(t, stops, rgba[:, k]) for k in range(4)], axis=-1).round().astype(np.uint8)
 
 
-def process(path: Path, window: dict, bbox) -> tuple[dict, bytes] | None:
-    """Overpass summary and PNG for one subset file, or None when no pixel is inside the rectangle."""
+def process(path: Path, window: dict, bbox) -> tuple[dict, dict[str, bytes]] | None:
+    """Overpass summary and one PNG per product for a subset file, or None when no pixel is inside the rectangle."""
     from PIL import Image, ImageDraw
 
     with netCDF4.Dataset(path) as ds:
@@ -107,9 +112,11 @@ def process(path: Path, window: dict, bbox) -> tuple[dict, bytes] | None:
         if delta.ndim == 1:
             delta = np.broadcast_to(delta[:, None], lat.shape)
         seen = delta[inside]
-        du = np.ma.filled(product["SUPPORT_DATA/DETAILED_RESULTS/sulfurdioxide_total_vertical_column_1km"][0], np.nan)
-        du = du * DU_PER_MOL_M2
-        good = inside & np.isfinite(du) & (np.ma.filled(product["qa_value"][0], 0.0) > QA_MIN)
+        detail = product["SUPPORT_DATA/DETAILED_RESULTS"]
+        columns = {k: np.ma.filled(detail[v["variable"]][0], np.nan) * DU_PER_MOL_M2 for k, v in PRODUCTS.items()}
+        good = inside & (np.ma.filled(product["qa_value"][0], 0.0) > QA_MIN)
+        for du in columns.values():
+            good &= np.isfinite(du)
         geo = product["SUPPORT_DATA/GEOLOCATIONS"]
         corner_lat = np.ma.filled(geo["latitude_bounds"][0], np.nan)[good]
         corner_lon = np.ma.filled(geo["longitude_bounds"][0], np.nan)[good]
@@ -118,32 +125,36 @@ def process(path: Path, window: dict, bbox) -> tuple[dict, bytes] | None:
     width, height = image_size(bbox)
     px = (corner_lon - west) / (east - west) * width
     py = (mercator_y(north) - mercator_y(corner_lat)) / (mercator_y(north) - mercator_y(south)) * height
-    image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(image)
-    values = du[good]
-    order = np.argsort(values)  # highest columns drawn last, on top
-    rgba = colours(values)
-    for k in order:
-        if np.isfinite(px[k]).all() and np.isfinite(py[k]).all():
-            draw.polygon(list(zip(px[k].tolist(), py[k].tolist())), fill=tuple(int(c) for c in rgba[k]))
-    buffer = io.BytesIO()
-    image.save(buffer, "PNG", optimize=True)
-
+    drawable = np.isfinite(px).all(axis=1) & np.isfinite(py).all(axis=1)
+    corners = [list(zip(px[k].tolist(), py[k].tolist())) for k in range(len(px))]
     stamp = lambda ms: (reference + timedelta(milliseconds=float(ms))).strftime("%Y-%m-%dT%H:%M:%SZ")  # noqa: E731
-    match = NAME.match(path.name)
+    orbit = int(NAME.match(path.name)["orbit"])
     meta = {
-        "orbit": int(match["orbit"]),
-        "stream": match["stream"],
+        "orbit": orbit,
+        "stream": NAME.match(path.name)["stream"],
         "start": stamp(np.nanmin(seen)),
         "end": stamp(np.nanmax(seen)),
         "pixels": int(inside.sum()),
         "good_pixels": int(good.sum()),
-        "max_du": round(float(values.max()), 1) if values.size else None,
-        "p99_du": round(float(np.percentile(values, 99)), 1) if values.size else None,
-        "image": f"tropomi/img/{int(match['orbit'])}.png",
+        "max_du": {},
+        "images": {},
         "processing": PROCESSING,
     }
-    return meta, buffer.getvalue()
+    pngs = {}
+    for key, spec in PRODUCTS.items():
+        values = columns[key][good]
+        image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(image)
+        rgba = colours(values, spec["max"])
+        for k in np.argsort(values):  # highest columns drawn last, on top
+            if drawable[k]:
+                draw.polygon(corners[k], fill=tuple(int(c) for c in rgba[k]))
+        buffer = io.BytesIO()
+        image.save(buffer, "PNG", optimize=True)
+        meta["max_du"][key] = round(float(values.max()), 1) if values.size else None
+        meta["images"][key] = f"tropomi/img/{orbit}_{key}.png"
+        pngs[key] = buffer.getvalue()
+    return meta, pngs
 
 
 # --- all orbits -------------------------------------------------------------
@@ -154,13 +165,15 @@ def write_index(sink: Sink, window: dict, bbox, overpasses: dict) -> None:
     index = {
         "version": 1,
         "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
-        "product": "TROPOMI SO2 total vertical column, 1 km box profile",
         "units": "DU",
+        "products": [
+            {"id": k, "label": v["label"], "legend": {"scale": "sqrt", "min": 0.0, "max": v["max"], "stops": [{"at": s, "rgba": list(c)} for s, c in RAMP]}}
+            for k, v in PRODUCTS.items()
+        ],
         "qa_min": QA_MIN,
         "bbox": bbox,
         "image_size": [width, height],
         "projection": "Web Mercator; every image covers bbox exactly",
-        "legend": {"scale": "sqrt", "min": 0.0, "max": SCALE_MAX_DU, "stops": [{"at": s, "rgba": list(c)} for s, c in RAMP]},
         "times": "start and end are when the first and last pixels inside the CARRA rectangle were observed (UTC)",
         "overpasses": sorted(overpasses.values(), key=lambda o: o.get("start", "")),
     }
@@ -188,8 +201,9 @@ def build(source: Source, sink: Sink, budget_hours: float, limit: int | None = N
         if result is None:
             overpasses[orbit] = {"orbit": orbit, "start": "", "processing": PROCESSING, "outside": True}
         else:
-            meta, png = result
-            sink.write(meta["image"], png, "image/png", max_age=86400)
+            meta, pngs = result
+            for product, png in pngs.items():
+                sink.write(meta["images"][product], png, "image/png", max_age=86400)
             overpasses[orbit] = meta
         done += 1
         if done % 50 == 0:

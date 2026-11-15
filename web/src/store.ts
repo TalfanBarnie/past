@@ -11,6 +11,7 @@ export interface State {
   cards: string[];
   hover: string | null;
   orbit: number | null;
+  product: string; // which TROPOMI plume-height product is drawn
 }
 
 let state: State = {
@@ -22,6 +23,7 @@ let state: State = {
   cards: [],
   hover: null,
   orbit: null,
+  product: "7km",
 };
 
 const listeners = new Set<() => void>();
@@ -80,6 +82,7 @@ function writeHash(): void {
     const parts = [`t=${iso(state.time)}`, `from=${iso(state.range[0])}`, `to=${iso(state.range[1])}`];
     if (state.cards.length) parts.push(`cards=${state.cards.join(",")}`);
     if (state.orbit !== null) parts.push(`orbit=${state.orbit}`);
+    if (state.product !== "7km") parts.push(`product=${state.product}`);
     history.replaceState(null, "", `#${parts.join("&")}`);
   }, 300);
 }
@@ -101,5 +104,7 @@ export function readHash(): void {
   if (cards) patch.cards = cards.split(",").filter(Boolean);
   const orbit = Number(params.get("orbit"));
   if (params.get("orbit") && Number.isFinite(orbit)) patch.orbit = orbit;
+  const product = params.get("product");
+  if (product) patch.product = product;
   state = { ...state, ...patch };
 }

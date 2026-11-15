@@ -48,6 +48,11 @@ h1 { font-size: 15px; font-weight: 600; margin: 0 0 6px; }
 .legend-ticks { position: relative; height: 15px; font-size: 10px; color: var(--muted); }
 .legend-ticks span { position: absolute; transform: translateX(-50%); }
 .legend-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 11px; color: #374151; margin-bottom: 4px; }
+.legend-switch { display: flex; gap: 0; margin: 2px 0 5px; }
+.legend-switch button { flex: 1; font-size: 11px; padding: 2px 4px; border: 1px solid #d1d5db; background: var(--surface); cursor: pointer; }
+.legend-switch button:first-child { border-radius: 4px 0 0 4px; }
+.legend-switch button:last-child { border-radius: 0 4px 4px 0; border-left: 0; }
+.legend-switch button.on { background: #581c87; border-color: #581c87; color: #fff; }
 .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1px solid #fff; outline: 1px solid #9ca3af; }
 .swatch.diamond { border-radius: 0; transform: rotate(45deg) scale(0.8); background: #9ca3af; margin-left: 6px; }
 .swatch.vent { border-radius: 0; outline: 0; border: 0; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid var(--ink); margin-left: 6px; }

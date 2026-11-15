@@ -37,16 +37,28 @@ export interface Overpass {
   end: string;
   pixels: number;
   good_pixels: number;
-  max_du: number | null;
-  image: string;
+  max_du: Record<string, number | null> | number | null;
+  images?: Record<string, string>;
+  image?: string; // older builds had a single image
   outside?: boolean;
   startMs: number;
   endMs: number;
 }
 
+export interface TropomiLegend {
+  max: number;
+  stops: { at: number; rgba: number[] }[];
+}
+
+export interface TropomiProduct {
+  id: string;
+  label: string;
+  legend: TropomiLegend;
+}
+
 export interface TropomiIndex {
   bbox: [number, number, number, number];
-  legend: { max: number; stops: { at: number; rgba: number[] }[] };
+  products: TropomiProduct[];
   overpasses: Overpass[];
 }
 

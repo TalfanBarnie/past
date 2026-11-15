@@ -78,6 +78,7 @@ export function MapView() {
   const hover = useStore((s) => s.hover);
   const cards = useStore((s) => s.cards);
   const orbit = useStore((s) => s.orbit);
+  const productId = useStore((s) => s.product);
   const [row, setRow] = useState<Float32Array | null>(null);
 
   useEffect(() => {
@@ -156,12 +157,15 @@ export function MapView() {
 
   // The selected TROPOMI overpass.
   const overpass = tropomi && orbit !== null ? tropomi.overpasses.find((o) => o.orbit === orbit) ?? null : null;
+  const product = tropomi?.products.find((p) => p.id === productId) ?? tropomi?.products[0] ?? null;
+  const image = overpass && product ? overpass.images?.[product.id] ?? overpass.image ?? null : null;
+  const highest = overpass && product && overpass.max_du && typeof overpass.max_du === "object" ? overpass.max_du[product.id] : null;
   useEffect(() => {
     if (!layers.current || !tropomi) return;
     layers.current.tropomi.setSource(
-      overpass
+      image
         ? new ImageStatic({
-            url: `${DATA_URL}/${overpass.image}`,
+            url: `${DATA_URL}/${image}`,
             projection: "EPSG:3857",
             imageExtent: transformExtent(tropomi.bbox, "EPSG:4326", "EPSG:3857"),
             crossOrigin: "anonymous",
@@ -169,9 +173,10 @@ export function MapView() {
           })
         : null,
     );
-  }, [tropomi, overpass]);
+  }, [tropomi, image]);
 
-  const legendStops = tropomi?.legend.stops ?? [];
+  const legendStops = product?.legend.stops ?? [];
+  const legendMax = product?.legend.max ?? 10;
   return (
     <div className="map">
       <div ref={element} className="map-canvas" />
@@ -197,9 +202,16 @@ export function MapView() {
           <span className="swatch diamond" /> mobile station
           <span className="swatch vent" /> eruption site
         </div>
-        {overpass && (
+        {tropomi && product && (
           <>
-            <div className="legend-title">TROPOMI SO₂ column, 1 km (DU)</div>
+            <div className="legend-title">TROPOMI SO₂ column (DU)</div>
+            <div className="legend-switch" role="group" aria-label="Assumed plume height">
+              {tropomi.products.map((p) => (
+                <button key={p.id} className={p.id === product.id ? "on" : ""} title={p.label} onClick={() => setState({ product: p.id })}>
+                  plume at {p.id.replace("km", " km")}
+                </button>
+              ))}
+            </div>
             <div
               className="legend-bar"
               style={{
@@ -209,16 +221,23 @@ export function MapView() {
               }}
             />
             <div className="legend-ticks">
-              {[0, 1, 5, 10, 20].map((v) => (
-                <span key={v} style={{ left: `${Math.sqrt(v / tropomi!.legend.max) * 100}%` }}>
+              {[0, 1, 2, 5, 10, 20].filter((v) => v <= legendMax).map((v) => (
+                <span key={v} style={{ left: `${Math.sqrt(v / legendMax) * 100}%` }}>
                   {v}
                 </span>
               ))}
             </div>
             <div className="legend-row">
-              {overpass.good_pixels
-                ? `${overpass.good_pixels} good-quality pixels, highest ${overpass.max_du} DU`
-                : "no good-quality pixels in this overpass"}
+              {!overpass
+                ? "Click an overpass line on a graph to show its image."
+                : overpass.good_pixels
+                  ? `${overpass.good_pixels} good-quality pixels${highest != null ? `, highest ${highest} DU` : ""}`
+                  : "No good-quality pixels in this overpass."}
+            </div>
+            <div className="legend-row">
+              {product.id === "7km"
+                ? "The 7 km product is the cleaner picture but understates a low plume."
+                : "The 1 km product suits low plumes but is several times noisier."}
             </div>
           </>
         )}

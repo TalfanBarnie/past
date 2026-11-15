@@ -25,5 +25,5 @@ def test_bbox_encloses_the_window_corners():
 
 
 def test_colour_ramp_is_monotonic_in_opacity():
-    alpha = wt.colours(np.array([-3.0, 0.0, 1.0, 5.0, 20.0, 80.0]))[:, 3]
+    alpha = wt.colours(np.array([-3.0, 0.0, 1.0, 5.0, 20.0, 80.0]), 20.0)[:, 3]
     assert (np.diff(alpha.astype(int)) >= 0).all() and alpha[0] == alpha[1] and alpha[-1] == alpha[-2]
