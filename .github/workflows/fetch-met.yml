@@ -9,6 +9,12 @@ on:
       days:
         description: Optional YYYY-MM-DD days (space separated); empty for the whole eruption
         default: ""
+      done_before:
+        description: Set by follow-up runs (days in the bucket when the previous run started)
+        default: "-1"
+      stalls:
+        description: Set by follow-up runs (consecutive runs without a new day)
+        default: "0"
 
 permissions:
   contents: read
@@ -18,19 +24,20 @@ permissions:
 concurrency:
   group: fetch-met
 
+env:
+  CDSAPI_KEY: ${{ secrets.CDSAPI_KEY }}
+  CDSAPI_URL: ${{ vars.CDSAPI_URL }}
+  B2_ENDPOINT: ${{ vars.B2_ENDPOINT }}
+  B2_PRIVATE_BUCKET: ${{ vars.B2_PRIVATE_BUCKET }}
+  B2_PRIVATE_KEY_ID: ${{ secrets.B2_PRIVATE_KEY_ID }}
+  B2_PRIVATE_APPLICATION_KEY: ${{ secrets.B2_PRIVATE_APPLICATION_KEY }}
+  ERUPTION: ${{ inputs.eruption }}
+  DAYS: ${{ inputs.days }}
+
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 355
-    env:
-      CDSAPI_KEY: ${{ secrets.CDSAPI_KEY }}
-      CDSAPI_URL: ${{ vars.CDSAPI_URL }}
-      B2_ENDPOINT: ${{ vars.B2_ENDPOINT }}
-      B2_PRIVATE_BUCKET: ${{ vars.B2_PRIVATE_BUCKET }}
-      B2_PRIVATE_KEY_ID: ${{ secrets.B2_PRIVATE_KEY_ID }}
-      B2_PRIVATE_APPLICATION_KEY: ${{ secrets.B2_PRIVATE_APPLICATION_KEY }}
-      ERUPTION: ${{ inputs.eruption }}
-      DAYS: ${{ inputs.days }}
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,11 +45,33 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -e ".[met]"
-      # Days already in the bucket are skipped. When the time budget runs out with
-      # days left, a follow-up run is started; it waits for this one to finish.
-      - id: fetch
-        run: python -m past_so2.fetch.carra --eruption "$ERUPTION" --budget-hours 3.25 ${DAYS:+--days $DAYS}
-      - if: steps.fetch.outputs.continue == 'true'
+      # Days already in the bucket are skipped, and no new day is started after the time budget.
+      - run: python -m past_so2.fetch.carra --eruption "$ERUPTION" --budget-hours 2.5 ${DAYS:+--days $DAYS}
+
+  # Starts a follow-up run while days remain, even if the fetch job timed out waiting
+  # for the CDS queue. Gives up after three runs in a row that add no new day.
+  continue:
+    needs: fetch
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[met]"
+      - id: status
+        run: python -m past_so2.fetch.carra --eruption "$ERUPTION" --status ${DAYS:+--days $DAYS}
+      - if: steps.status.outputs.remaining != '0'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run fetch-met.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f eruption="$ERUPTION" -f days="$DAYS"
+          DONE: ${{ steps.status.outputs.done }}
+          DONE_BEFORE: ${{ inputs.done_before }}
+          STALLS: ${{ inputs.stalls }}
+        run: |
+          if [ "$DONE" = "$DONE_BEFORE" ]; then STALLS=$((STALLS + 1)); else STALLS=0; fi
+          if [ "$STALLS" -ge 3 ]; then echo "No new day in three runs; stopping."; exit 1; fi
+          gh workflow run fetch-met.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" \
+            -f eruption="$ERUPTION" -f days="$DAYS" -f done_before="$DONE" -f stalls="$STALLS"

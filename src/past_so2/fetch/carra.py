@@ -342,6 +342,7 @@ def main(argv=None):
     ap.add_argument("--days", nargs="*", help="restrict to these YYYY-MM-DD days")
     ap.add_argument("--budget-hours", type=float, default=5.0, help="do not start another day after this long")
     ap.add_argument("--local", type=Path, help="write files here instead of uploading (testing)")
+    ap.add_argument("--status", action="store_true", help="only report how many days are in the bucket")
     args = ap.parse_args(argv)
 
     cfg = config.load()
@@ -355,6 +356,14 @@ def main(argv=None):
         from .. import storage
 
         bucket = storage.bucket("private")
+
+    if args.status:
+        done = sum(bucket.exists(key_for(d)) for d in days)
+        print(f"{done} of {len(days)} days in the bucket", flush=True)
+        if os.environ.get("GITHUB_OUTPUT"):
+            with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+                f.write(f"done={done}\nremaining={len(days) - done}\n")
+        return
 
     started, remaining, fetched = time.time(), [], 0
     for n, day in enumerate(days):
@@ -374,10 +383,6 @@ def main(argv=None):
         fetched += 1
     if remaining:
         print(f"time budget reached; {len(remaining)} days left, starting {remaining[0]}. Run again to continue.", flush=True)
-    # Lets the workflow start a follow-up run, but only if this one made progress.
-    if os.environ.get("GITHUB_OUTPUT"):
-        with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-            f.write(f"continue={'true' if remaining and fetched else 'false'}\n")
 
 
 if __name__ == "__main__":
