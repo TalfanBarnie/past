@@ -1,0 +1,1724 @@
+{
+  "description": "Links SO2 stations across the two sources: the hourly API archive (api.ust.is/aq) and the manual website downloads (10-minute where available) kept in the private bucket. Times are UTC.",
+  "fields": {
+    "minutes_to_add_to_align_with_api": "Add to website time stamps so that hourly means match the API's hour-ending stamps; null where no API data overlapped to check.",
+    "api_minus_website_median": "Median of API value minus website hourly mean (µg/m3); the API archive is baseline-corrected, the website download is not.",
+    "mobile": "Flagged mobile in the API or known mobile unit; the listed position may not hold for the whole record."
+  },
+  "stations": [
+    {
+      "id": "akureyri-strandgata",
+      "name": "Akureyri, Strandgata",
+      "latitude": 65.684092,
+      "longitude": -18.088205,
+      "position_source": "API STA-IS0052A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0052A",
+          "name": "Akureyri Strandgata (við Hof)",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Akureyri, Strandgata við Hof",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Akureyri, Strandgata við Hof. Rekstraraðilar Akureyrarbær og Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 7931,
+            "matched_api_station": "STA-IS0052A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Akureyri, Strandgata við Hof. Rekstraraðilar Akureyrarbær og Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8331,
+            "matched_api_station": "STA-IS0052A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.97
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Akureyri, Strandgata við Hof. Rekstraraðilar Akureyrarbær og Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8748,
+            "matched_api_station": "STA-IS0052A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.98
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/TryMonitorings.csv",
+            "rows_10min": 0,
+            "rows_hourly": 8702,
+            "matched_api_station": "STA-IS0052A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -10.16
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Akureyri, Strandgata við Hof. Rekstraraðilar Akureyrarbær og Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8648,
+            "matched_api_station": "STA-IS0052A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -50.06
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "asbru",
+      "name": "Ásbrú, Leikskólinn Völlur",
+      "latitude": 63.969,
+      "longitude": -22.589,
+      "position_source": "API STA-IS0067A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0067A",
+          "name": "Ásbrú",
+          "archive_years_with_so2": [
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Ásbrú, Leikskólinn Völlur",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Ásbrú, Leikskólinn Völlur. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 34736,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Ásbrú, Leikskólinn Völlur. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 52280,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Ásbrú, Leikskólinn Völlur. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 8018,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Ásbrú, Leikskólinn Völlur. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 49811,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0067A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -1.01
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Ásbrú, Leikskólinn Völlur. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 52501,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0067A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -1.33
+          }
+        }
+      },
+      "note": "Website data for 2021-2023 predates the API station; same position used."
+    },
+    {
+      "id": "gardabaer-gardaholt",
+      "name": "Garðabær, Garðaholt",
+      "latitude": 64.087995,
+      "longitude": -21.996085,
+      "position_source": "API STA-IS0064A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0064A",
+          "name": "Garðabær Garðaholt",
+          "archive_years_with_so2": [
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Garðabær, Garðaholt",
+        "years": {
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Garðabær, Garðaholt. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar, Garðabæjar og Kópavogs. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 2486,
+            "matched_api_station": "STA-IS0064A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Garðabær, Garðaholt. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar, Garðabæjar og Kópavogs. .csv",
+            "rows_10min": 31298,
+            "rows_hourly": 3566,
+            "matched_api_station": "STA-IS0064A",
+            "minutes_to_add_to_align_with_api": -50,
+            "api_minus_website_median": -10.2
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Garðabær, Garðaholt. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar, Garðabæjar og Kópavogs. .csv",
+            "rows_10min": 52375,
+            "rows_hourly": 3,
+            "matched_api_station": "STA-IS0064A",
+            "minutes_to_add_to_align_with_api": -50,
+            "api_minus_website_median": -5.41
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "gardur",
+      "name": "Garður",
+      "latitude": 64.071,
+      "longitude": -22.65,
+      "position_source": "API STA-IS0066A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0066A",
+          "name": "Garður",
+          "archive_years_with_so2": [
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Garður, SO2 og H2S",
+        "years": {
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Garður, SO2 og H2S. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 48782,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0066A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 4.52
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Garður, SO2 og H2S. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 52364,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0066A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -1.41
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "grindavik",
+      "name": "Grindavík, Nesvegur",
+      "latitude": 63.852005,
+      "longitude": -22.433788,
+      "position_source": "API STA-IS0044A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0044A",
+          "name": "Grindavík Nesvegur",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Grindavík, SO2 og H2S",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Grindavík, SO2 og H2S. Rekstaraðili HS Orka. SO2 kemur frá eldgosum og nýrunnum hraunum en H2S kemur frá virkjuninni í Svartsengi. .csv",
+            "rows_10min": 37848,
+            "rows_hourly": 1195,
+            "matched_api_station": "STA-IS0044A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Grindavík, SO2 og H2S. Rekstaraðili HS Orka. SO2 kemur frá eldgosum og nýrunnum hraunum en H2S kemur frá virkjuninni í Svartsengi. .csv",
+            "rows_10min": 52543,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0044A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.0
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Grindavík, SO2 og H2S. Rekstaraðili HS Orka. SO2 kemur frá eldgosum og nýrunnum hraunum en H2S kemur frá virkjuninni í Svartsengi..csv",
+            "rows_10min": 42399,
+            "rows_hourly": 1,
+            "matched_api_station": "STA-IS0044A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Grindavík, SO2 og H2S. Rekstaraðili HS Orka. SO2 kemur frá eldgosum og nýrunnum hraunum en H2S kemur frá virkjuninni í Svartsengi..csv",
+            "rows_10min": 51673,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0044A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.0
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Grindavík, SO2 og H2S. Rekstaraðili HS Orka. SO2 kemur frá eldgosum og nýrunnum hraunum en H2S kemur frá virkjuninni í Svartsengi. .csv",
+            "rows_10min": 48291,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0044A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "grundartangi-grof",
+      "name": "Hvalfjörður, Gröf",
+      "latitude": 64.334164,
+      "longitude": -21.835686,
+      "position_source": "API STA-IS0041A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0041A",
+          "name": "Grundartangi Gröf",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Hvalfjörður, Gröf",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Hvalfjörður, Gröf. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8683,
+            "matched_api_station": "STA-IS0041A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Hvalfjörður, Gröf. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8202,
+            "matched_api_station": "STA-IS0041A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -2.04
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Hvalfjörður, Gröf. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8504,
+            "matched_api_station": "STA-IS0041A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -7.89
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Hvalfjörður, Gröf. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8716,
+            "matched_api_station": "STA-IS0041A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -3.39
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Hvalfjörður, Gröf. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8577,
+            "matched_api_station": "STA-IS0041A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -2.2
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "grundartangi-kriuvarda",
+      "name": "Hvalfjörður, Kríuvarða",
+      "latitude": 64.373583,
+      "longitude": -21.759139,
+      "position_source": "API STA-IS0025A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0025A",
+          "name": "Grundartangi Kríuvarða",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Hvalfjörður, Kríuvarða",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Hvalfjörður, Kríuvarða. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8615,
+            "matched_api_station": "STA-IS0025A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Hvalfjörður, Kríuvarða. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8295,
+            "matched_api_station": "STA-IS0025A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -1.48
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Hvalfjörður, Kríuvarða. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8760,
+            "matched_api_station": "STA-IS0025A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -3.49
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Hvalfjörður, Kríuvarða. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8717,
+            "matched_api_station": "STA-IS0025A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -0.74
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Hvalfjörður, Kríuvarða. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8687,
+            "matched_api_station": "STA-IS0025A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -0.67
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "grundartangi-melahverfi",
+      "name": "Hvalfjörður, Melahverfi",
+      "latitude": 64.38165,
+      "longitude": -21.84,
+      "position_source": "API STA-IS0048A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0048A",
+          "name": "Grundartangi Melahverfi",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Hvalfjörður, Melahverfi",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Hvalfjörður, Melahverfi. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8484,
+            "matched_api_station": "STA-IS0048A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Hvalfjörður, Melahverfi. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8744,
+            "matched_api_station": "STA-IS0048A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -6.47
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Hvalfjörður, Melahverfi. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8560,
+            "matched_api_station": "STA-IS0048A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -12.17
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Hvalfjörður, Melahverfi. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 5517,
+            "matched_api_station": "STA-IS0048A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -7.72
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Hvalfjörður, Melahverfi. Rekstraraðilar eru Elkem og Norðurál. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 2675,
+            "matched_api_station": "STA-IS0048A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "hafnarfjordur-hvaleyrarholt",
+      "name": "Hafnarfjörður, Hvaleyrarholt",
+      "latitude": 64.058867,
+      "longitude": -21.990733,
+      "position_source": "API STA-IS0002A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0002A",
+          "name": "Hafnarfjörður Hvaleyrarholt",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Hafnarfjörður, Hvaleyrarholt",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Hafnarfjörður, Hvaleyrarholt. Rekstraraðili er Rio Tinto á Íslandi. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8582,
+            "matched_api_station": "STA-IS0002A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Hafnarfjörður, Hvaleyrarholt. Rekstraraðili er Rio Tinto á Íslandi. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8754,
+            "matched_api_station": "STA-IS0002A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -3.2
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Hafnarfjörður, Hvaleyrarholt. Rekstraraðili er Rio Tinto á Íslandi. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 7627,
+            "matched_api_station": "STA-IS0002A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -2.51
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Hafnarfjörður, Hvaleyrarholt. Rekstraraðili er Rio Tinto á Íslandi. .csv",
+            "rows_10min": 31314,
+            "rows_hourly": 3565,
+            "matched_api_station": "STA-IS0002A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -3.34
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Hafnarfjörður, Hvaleyrarholt. Rekstraraðili er Rio Tinto á Íslandi. .csv",
+            "rows_10min": 45933,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0002A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -4.17
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "hafnarfjordur-lonakot",
+      "name": "Hafnarfjörður, Lónakot",
+      "latitude": 64.034,
+      "longitude": -22.087,
+      "position_source": "API STA-IS0065A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0065A",
+          "name": "Hafnarfjörður Lónakot Rio Tinto",
+          "archive_years_with_so2": [
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Hafnarfjörður, Lónakot",
+        "years": {
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Hafnarfjörður, Lónakot. Rekstraraðili er Rio Tinto. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 6509,
+            "matched_api_station": "STA-IS0065A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Hafnarfjörður, Lónakot. Rekstraraðili er Rio Tinto. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8389,
+            "matched_api_station": "STA-IS0065A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -3.89
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Hafnarfjörður, Lónakot. Rekstraraðili er Rio Tinto. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 6753,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "hafnarfjordur-nordurhella",
+      "name": "Hafnarfjörður, Norðurhella",
+      "latitude": 64.04416,
+      "longitude": -21.98535,
+      "position_source": "API STA-IS0046A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0046A",
+          "name": "Hafnarfjörður Norðurhella",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Hafnarfjörður, Norðurhella",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Hafnarfjörður, Norðurhella. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar- og Kópavogssvæðis. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8621,
+            "matched_api_station": "STA-IS0046A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Hafnarfjörður, Norðurhella. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar- og Kópavogssvæðis. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8713,
+            "matched_api_station": "STA-IS0046A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -1.4
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Hafnarfjörður, Norðurhella. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar- og Kópavogssvæðis. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8724,
+            "matched_api_station": "STA-IS0046A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -2.23
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Hafnarfjörður, Norðurhella. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar- og Kópavogssvæðis. .csv",
+            "rows_10min": 31308,
+            "rows_hourly": 3565,
+            "matched_api_station": "STA-IS0046A",
+            "minutes_to_add_to_align_with_api": -50,
+            "api_minus_website_median": 0.86
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Hafnarfjörður, Norðurhella. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar- og Kópavogssvæðis. .csv",
+            "rows_10min": 51613,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0046A",
+            "minutes_to_add_to_align_with_api": -50,
+            "api_minus_website_median": -0.99
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "hafnir",
+      "name": "Hafnir",
+      "latitude": 63.932,
+      "longitude": -22.684,
+      "position_source": "API STA-IS0069A",
+      "mobile": true,
+      "api": [
+        {
+          "station_id": "STA-IS0059A",
+          "name": "Hafnir gamli skóli",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "station_id": "STA-IS0069A",
+          "name": "Hafnir",
+          "archive_years_with_so2": [
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Hafnir, SO2 og H2S",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Hafnir, SO2 og H2S. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 36523,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0059A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Hafnir, SO2 og H2S. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 7688,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0059A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Hafnir, SO2 og H2S. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 6427,
+            "rows_hourly": 1,
+            "matched_api_station": "STA-IS0059A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.0
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Hafnir, SO2 og H2S. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 51297,
+            "rows_hourly": 1,
+            "matched_api_station": "STA-IS0069A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -2.99
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Hafnir, SO2 og H2S. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 52510,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0069A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -1.82
+          }
+        }
+      },
+      "note": "API station changed from Hafnir gamli skóli (to Feb 2024) to Hafnir; same site."
+    },
+    {
+      "id": "hellisheidarvirkjun",
+      "name": "Hengill, Hellisheiðarvirkjun",
+      "latitude": 64.032916,
+      "longitude": -21.413958,
+      "position_source": "website (read manually)",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0023A",
+          "name": "Hellisheiðarvirkjun",
+          "archive_years_with_so2": []
+        }
+      ],
+      "website": {
+        "name": "Hengillinn, Hellisheiðarvirkjun",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Hengillinn, Hellisheiðarvirkjun. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 6791,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Hengillinn, Hellisheiðarvirkjun. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8750,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Hengillinn, Hellisheiðarvirkjun. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8680,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Hengillinn, Hellisheiðarvirkjun. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 31298,
+            "rows_hourly": 3567,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Hengillinn, Hellisheiðarvirkjun. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 52559,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          }
+        }
+      },
+      "note": "Listed in the API station list but has no SO2 in the API archive."
+    },
+    {
+      "id": "hveragerdi-finnmork",
+      "name": "Hveragerði, Finnmörk",
+      "latitude": 64.000016,
+      "longitude": -21.197967,
+      "position_source": "website (read manually)",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0024A",
+          "name": "Hveragerði Leikskólinn Óskaland",
+          "archive_years_with_so2": []
+        }
+      ],
+      "website": {
+        "name": "Hveragerði, Finnmörk",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Hveragerði, Finnmörk. Rekstaraðili er Orka náttúrunnar. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 4995,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Hveragerði, Finnmörk. Rekstaraðili er Orka náttúrunnar. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 3695,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Hveragerði, Finnmörk. Rekstaraðili er Orka náttúrunnar. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 5681,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Hveragerði, Finnmörk. Rekstaraðili er Orka náttúrunnar. .csv",
+            "rows_10min": 31235,
+            "rows_hourly": 3568,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Hveragerði, Finnmörk. Rekstaraðili er Orka náttúrunnar. .csv",
+            "rows_10min": 52542,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          }
+        }
+      },
+      "note": "Listed in the API station list (as Hveragerði Leikskólinn Óskaland) but has no SO2 in the API archive."
+    },
+    {
+      "id": "keflavik",
+      "name": "Keflavík, Vatnaveröld",
+      "latitude": 63.993,
+      "longitude": -22.56,
+      "position_source": "API STA-IS0070A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0070A",
+          "name": "Keflavík Vatnaveröld",
+          "archive_years_with_so2": [
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Keflavík, SO2 og H2S",
+        "years": {
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Keflavík, SO2 og H2S. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 43707,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0070A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.58
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Keflavík, SO2 og H2S. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 52484,
+            "rows_hourly": 1,
+            "matched_api_station": "STA-IS0070A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.22
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "kirkjubaejarklaustur",
+      "name": "Kirkjubæjarklaustur",
+      "latitude": 63.795,
+      "longitude": -18.043,
+      "position_source": "API STA-IS0074A",
+      "mobile": true,
+      "api": [
+        {
+          "station_id": "STA-IS0074A",
+          "name": "Kirkjubæjarklaustur",
+          "archive_years_with_so2": [
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": null,
+      "note": "API archive only; no website download."
+    },
+    {
+      "id": "kopavogur-dalsmari",
+      "name": "Kópavogur, Dalsmári",
+      "latitude": 64.10495,
+      "longitude": -21.889,
+      "position_source": "API STA-IS0037A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0037A",
+          "name": "Kópavogur Dalsmári",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Kópavogur, Dalsmári",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Kópavogur, Dalsmári. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar, Garðabæjar og Kópavogs. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8649,
+            "matched_api_station": "STA-IS0037A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Kópavogur, Dalsmári. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar, Garðabæjar og Kópavogs. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8754,
+            "matched_api_station": "STA-IS0037A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -7.6
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Kópavogur, Dalsmári. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar, Garðabæjar og Kópavogs. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8703,
+            "matched_api_station": "STA-IS0037A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -6.92
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Kópavogur, Dalsmári. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar, Garðabæjar og Kópavogs. .csv",
+            "rows_10min": 31295,
+            "rows_hourly": 3543,
+            "matched_api_station": "STA-IS0037A",
+            "minutes_to_add_to_align_with_api": -50,
+            "api_minus_website_median": -1.01
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Kópavogur, Dalsmári. Rekstraraðili er Heilbrigðiseftirlit Hafnafjarðar, Garðabæjar og Kópavogs. .csv",
+            "rows_10min": 46526,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0037A",
+            "minutes_to_add_to_align_with_api": -50,
+            "api_minus_website_median": -1.49
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "kopavogur-horduvallaskoli",
+      "name": "Kópavogur Hörðuvallaskóli",
+      "latitude": 64.085637,
+      "longitude": -21.824893,
+      "position_source": "API STA-IS0063A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0063A",
+          "name": "Kópavogur Hörðuvallaskóli",
+          "archive_years_with_so2": [
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": null,
+      "note": "API archive only; no website download."
+    },
+    {
+      "id": "njardvik-lerkidalur",
+      "name": "Njarðvík Lerkidalur",
+      "latitude": 63.970504,
+      "longitude": -22.483253,
+      "position_source": "API STA-IS0060A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0060A",
+          "name": "Njarðvík Lerkidalur",
+          "archive_years_with_so2": [
+            2021,
+            2022
+          ]
+        }
+      ],
+      "website": null,
+      "note": "API archive only; no website download."
+    },
+    {
+      "id": "njardvik-stapaskoli",
+      "name": "Njarðvík, Stapaskóli",
+      "latitude": 63.973,
+      "longitude": -22.494,
+      "position_source": "API STA-IS0071A",
+      "mobile": true,
+      "api": [
+        {
+          "station_id": "STA-IS0071A",
+          "name": "Njarðvík Stapaskóli",
+          "archive_years_with_so2": [
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Njarðvík, SO2 og H2S",
+        "years": {
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Njarðvík, SO2 og H2S. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 21345,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Njarðvík, SO2 og H2S. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 33338,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Njarðvík, SO2 og H2S. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 52298,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0071A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.93
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Njarðvík, SO2 og H2S. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 52479,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0071A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.63
+          }
+        }
+      },
+      "note": "Website data for 2022-2023 predates the API station; position confirmed from the website."
+    },
+    {
+      "id": "pcc-nordur",
+      "name": "PCC norður",
+      "latitude": 66.079276,
+      "longitude": -17.342173,
+      "position_source": "API STA-IS0049A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0049A",
+          "name": "PCC norður",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": null,
+      "note": "API archive only; no website download."
+    },
+    {
+      "id": "pcc-sudur",
+      "name": "PCC suður",
+      "latitude": 66.054858,
+      "longitude": -17.34755,
+      "position_source": "API STA-IS0050A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0050A",
+          "name": "PCC suður",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": null,
+      "note": "API archive only; no website download."
+    },
+    {
+      "id": "portable-farstod-2",
+      "name": "Portable Farstöð 2",
+      "latitude": 64.145,
+      "longitude": -21.774,
+      "position_source": "API STA-IS0057A",
+      "mobile": true,
+      "api": [
+        {
+          "station_id": "STA-IS0057A",
+          "name": "Portable Farstöð 2",
+          "archive_years_with_so2": [
+            2021,
+            2022
+          ]
+        }
+      ],
+      "website": null,
+      "note": "API archive only; no website download."
+    },
+    {
+      "id": "reydarfjordur-hjallaleyra-stod-1",
+      "name": "Reyðarfjörður Hjallaleyra stöð 1",
+      "latitude": 65.0304,
+      "longitude": -14.241917,
+      "position_source": "API STA-IS0027A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0027A",
+          "name": "Reyðarfjörður Hjallaleyra stöð 1",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": null,
+      "note": "API archive only; no website download."
+    },
+    {
+      "id": "reydarfjordur-holmar",
+      "name": "Reyðarfjörður, Hólmar (stöð 3)",
+      "latitude": 65.040073,
+      "longitude": -14.04761,
+      "position_source": "API STA-IS0029A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0029A",
+          "name": "Reyðarfjörður Hólmar stöð 3",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Reyðarfjörður, Hólmar, Stöð 3",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Reyðarfjörður, Hólmar, Stöð 3. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 7407,
+            "matched_api_station": "STA-IS0029A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Reyðarfjörður, Hólmar, Stöð 3. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8693,
+            "matched_api_station": "STA-IS0029A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.42
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Reyðarfjörður, Hólmar, Stöð 3. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8710,
+            "matched_api_station": "STA-IS0029A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -0.22
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Reyðarfjörður, Hólmar, Stöð 3. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 6489,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Reyðarfjörður, Hólmar, Stöð 3. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 7773,
+            "matched_api_station": "STA-IS0029A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -0.13
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "reydarfjordur-ljosa",
+      "name": "Reyðarfjörður, Ljósá (stöð 2)",
+      "latitude": 65.030316,
+      "longitude": -14.162462,
+      "position_source": "API STA-IS0028A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0028A",
+          "name": "Reyðarfjörður Ljósá stöð 2",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Reyðarfjörður, Ljósá, Stöð 2",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Reyðarfjörður, Ljósá, Stöð 2. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8685,
+            "matched_api_station": "STA-IS0028A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Reyðarfjörður, Ljósá, Stöð 2. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8697,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Reyðarfjörður, Ljósá, Stöð 2. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8715,
+            "matched_api_station": "STA-IS0028A",
+            "minutes_to_add_to_align_with_api": -60,
+            "api_minus_website_median": -0.46
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Reyðarfjörður, Ljósá, Stöð 2. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 6491,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Reyðarfjörður, Ljósá, Stöð 2. Rekstraraðili er Alcoa. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 7578,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "reydarfjordur-midstrandareyri",
+      "name": "Reyðarfjörður, Miðstrandareyri (stöð 4)",
+      "latitude": 65.012539,
+      "longitude": -14.130437,
+      "position_source": "API STA-IS0030A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0030A",
+          "name": "Reyðarfjörður Miðstrandareyri stöð 4",
+          "archive_years_with_so2": [
+            2021
+          ]
+        }
+      ],
+      "website": {
+        "name": "Reyðarfjörður, Miðstrandareyri, Stöð 4",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Reyðarfjörður, Miðstrandareyri, Stöð 4. Rekstraraðili er Alcoa. - Tilkynning 13.júlí_ Vegna bilunar berast engin mæligögn. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 2167,
+            "matched_api_station": "STA-IS0030A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": 0.0
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Reyðarfjörður, Miðstrandareyri, Stöð 4. Rekstraraðili er Alcoa. - Tilkynning 13.júlí_ Vegna bilunar berast engin mæligögn. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "reykjavik-grensasvegur",
+      "name": "Reykjavík, Grensásvegur",
+      "latitude": 64.1301,
+      "longitude": -21.87465,
+      "position_source": "API STA-IS0005A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0005A",
+          "name": "Reykjavik Grensas",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Reykjavík, Grensásvegur",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Reykjavík, Grensásvegur. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8692,
+            "matched_api_station": "STA-IS0005A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -0.0
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Reykjavík, Grensásvegur. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8737,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Reykjavík, Grensásvegur. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8618,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Reykjavík, Grensásvegur. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8600,
+            "matched_api_station": "STA-IS0005A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -2.9
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Reykjavík, Grensásvegur. Rekstraraðili er Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8709,
+            "matched_api_station": "STA-IS0005A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -2.28
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "reykjavik-hlidarfotur",
+      "name": "Reykjavík, Hlíðarfótur",
+      "latitude": 64.132,
+      "longitude": -21.92899,
+      "position_source": "website (read manually)",
+      "mobile": true,
+      "api": [],
+      "website": {
+        "name": "Reykjavík, Hlíðarfótur",
+        "years": {
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Reykjavík, Hlíðarfótur. Rekstraraðili er Heilbrigðiseftirlit Reykjavíkur. .csv",
+            "rows_10min": 1962,
+            "rows_hourly": 495,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          }
+        }
+      },
+      "note": "Mobile station HER_Farstod3_Rvk_Hlidarfotur; not in the API."
+    },
+    {
+      "id": "reykjavik-laugarnes",
+      "name": "Reykjavík, Laugarnes",
+      "latitude": 64.153354,
+      "longitude": -21.885998,
+      "position_source": "API STA-IS0061A",
+      "mobile": true,
+      "api": [
+        {
+          "station_id": "STA-IS0061A",
+          "name": "Reykjavík Laugarnes",
+          "archive_years_with_so2": [
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Reykjavík, Laugarnes",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Reykjavík, Laugarnes. Rekstraraðili er Faxaflóahafnir. .csv",
+            "rows_10min": 1138,
+            "rows_hourly": 473,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Reykjavík, Laugarnes. Rekstraraðili er Faxaflóahafnir. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 6782,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Reykjavík, Laugarnes. Rekstraraðili er Faxaflóahafnir. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8575,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Reykjavík, Laugarnes. Rekstraraðili er Faxaflóahafnir. .csv",
+            "rows_10min": 31250,
+            "rows_hourly": 3517,
+            "matched_api_station": "STA-IS0061A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -2.59
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Reykjavík, Laugarnes. Rekstraraðili er Faxaflóahafnir. .csv",
+            "rows_10min": 52512,
+            "rows_hourly": 0,
+            "matched_api_station": "STA-IS0061A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -4.28
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "reykjavik-mjodd",
+      "name": "Reykjavík, Mjódd",
+      "latitude": 64.110354,
+      "longitude": -21.840993,
+      "position_source": "website (read manually)",
+      "mobile": true,
+      "api": [],
+      "website": {
+        "name": "Reykjavík, Mjódd",
+        "years": {
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Reykjavík, Mjódd. Rekstraraðili er Heilbrigðiseftirlit Reykjavíkur. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 539,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          }
+        }
+      },
+      "note": "Mobile station HER_Farstod1_Mjodd; no SO2 for it in the API."
+    },
+    {
+      "id": "reykjavik-nordlingaholt",
+      "name": "Reykjavík, Norðlingaholt",
+      "latitude": 64.101952,
+      "longitude": -21.778044,
+      "position_source": "website (read manually)",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0022A",
+          "name": "Reykjavík Norðlingaholt",
+          "archive_years_with_so2": []
+        }
+      ],
+      "website": {
+        "name": "Reykjavík, Norðlingaholt",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Reykjavík, Norðlingaholt. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 6767,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2022": {
+            "file": "stations/raw_downloads_from_website/2022/Reykjavík, Norðlingaholt. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 8195,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Reykjavík, Norðlingaholt. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 0,
+            "rows_hourly": 7310,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Reykjavík, Norðlingaholt. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 31300,
+            "rows_hourly": 3567,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Reykjavík, Norðlingaholt. Rekstraraðili er Orka Náttúrunnar. .csv",
+            "rows_10min": 52484,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          }
+        }
+      },
+      "note": "Listed in the API station list but has no SO2 in the API archive."
+    },
+    {
+      "id": "sandgerdi",
+      "name": "Sandgerði",
+      "latitude": 64.034,
+      "longitude": -22.699,
+      "position_source": "API STA-IS0068A",
+      "mobile": false,
+      "api": [
+        {
+          "station_id": "STA-IS0068A",
+          "name": "Sandgerði",
+          "archive_years_with_so2": [
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Sandgerði, SO2 og H2S",
+        "years": {
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Sandgerði, SO2 og H2S. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 50475,
+            "rows_hourly": 2,
+            "matched_api_station": "STA-IS0068A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -1.61
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Sandgerði, SO2 og H2S. Rekstraraðili Umhverfis- og orkustofnun. .csv",
+            "rows_10min": 52039,
+            "rows_hourly": 11,
+            "matched_api_station": "STA-IS0068A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -1.26
+          }
+        }
+      },
+      "note": null
+    },
+    {
+      "id": "selfoss",
+      "name": "Selfoss",
+      "latitude": 63.929,
+      "longitude": -21.021,
+      "position_source": "API STA-IS0073A",
+      "mobile": true,
+      "api": [
+        {
+          "station_id": "STA-IS0073A",
+          "name": "Selfoss",
+          "archive_years_with_so2": [
+            2024,
+            2025
+          ]
+        }
+      ],
+      "website": null,
+      "note": "API archive only; no website download."
+    },
+    {
+      "id": "vogar",
+      "name": "Vogar",
+      "latitude": 63.985,
+      "longitude": -22.38,
+      "position_source": "API STA-IS0072A",
+      "mobile": true,
+      "api": [
+        {
+          "station_id": "STA-IS0058A",
+          "name": "Vogar tjaldstæði",
+          "archive_years_with_so2": [
+            2021,
+            2022,
+            2023
+          ]
+        },
+        {
+          "station_id": "STA-IS0072A",
+          "name": "Vogar",
+          "archive_years_with_so2": [
+            2025
+          ]
+        }
+      ],
+      "website": {
+        "name": "Vogar, SO2 og H2S",
+        "years": {
+          "2021": {
+            "file": "stations/raw_downloads_from_website/2021/Vogar, SO2 og H2S. .csv",
+            "rows_10min": 34,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2023": {
+            "file": "stations/raw_downloads_from_website/2023/Vogar, SO2 og H2S. .csv",
+            "rows_10min": 23325,
+            "rows_hourly": 329,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2024": {
+            "file": "stations/raw_downloads_from_website/2024/Vogar, SO2 og H2S. .csv",
+            "rows_10min": 51166,
+            "rows_hourly": 0,
+            "matched_api_station": null,
+            "minutes_to_add_to_align_with_api": null,
+            "api_minus_website_median": null
+          },
+          "2025": {
+            "file": "stations/raw_downloads_from_website/2025/Vogar, SO2 og H2S. .csv",
+            "rows_10min": 45208,
+            "rows_hourly": 11,
+            "matched_api_station": "STA-IS0072A",
+            "minutes_to_add_to_align_with_api": 0,
+            "api_minus_website_median": -1.5
+          }
+        }
+      },
+      "note": "API station changed from Vogar tjaldstæði to Vogar; same position used throughout."
+    }
+  ]
+}
