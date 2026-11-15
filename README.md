@@ -31,6 +31,16 @@ Secrets: `CDSAPI_KEY`, `CDSE_S3_ACCESS_KEY`, `CDSE_S3_SECRET_KEY`,
 Variables: `CDSAPI_URL`, `B2_ENDPOINT`, `B2_PRIVATE_BUCKET`, `B2_PUBLIC_BUCKET`,
 `B2_PUBLIC_URL`.
 
+## Web viewer
+
+`web/` is a static React page (OpenLayers map, uPlot graphs) deployed to GitHub
+Pages by the "Deploy site" workflow. It reads the files that the "Build web
+data" workflow publishes under `web/v1/` in the public bucket.
+
+```
+cd web && npm install && npm run dev
+```
+
 ## Development
 
 ```

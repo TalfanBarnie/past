@@ -28,9 +28,10 @@ DU_PER_MOL_M2 = 2241.15
 QA_MIN = 0.5
 SCALE_MAX_DU = 20.0
 IMAGE_WIDTH = 1024
-PROCESSING = 1  # bump to rebuild every image
-# Light to dark purple; the alpha rises with the column so noise near zero stays faint.
-RAMP = [(0.0, (236, 231, 242, 70)), (0.25, (190, 160, 215, 150)), (0.5, (140, 90, 190, 200)), (0.75, (95, 40, 150, 225)), (1.0, (50, 0, 85, 240))]
+PROCESSING = 2  # bump to rebuild every image
+# Light to dark purple. Retrieval noise is a couple of DU, so columns near zero are almost
+# transparent (enough to show where there is coverage) and opacity rises with the column.
+RAMP = [(0.0, (225, 215, 240, 28)), (0.25, (190, 160, 215, 60)), (0.5, (140, 90, 190, 175)), (0.75, (95, 40, 150, 225)), (1.0, (50, 0, 85, 245))]
 NAME = re.compile(r"S5P_(?P<stream>\w{4})_L2__SO2____(?P<start>\d{8}T\d{6})_\d{8}T\d{6}_(?P<orbit>\d{5})_")
 
 
