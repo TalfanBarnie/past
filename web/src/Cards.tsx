@@ -85,6 +85,11 @@ export function Cards() {
       {open.map((s) => (
         <Card key={s.id} station={s} />
       ))}
+      <div className="credits">
+        Ground station data: Umhverfis- og orkustofnun (Environment and Energy Agency of Iceland) and the station
+        operators, from api.ust.is and loftgæði.is. The website series are unvalidated measurements. Satellite images
+        contain modified Copernicus Sentinel-5P data.
+      </div>
     </div>
   );
 }
